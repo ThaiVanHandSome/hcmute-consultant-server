@@ -100,7 +100,7 @@ public class UserInformationEntity {
     @JsonIgnore
     private Set<RatingEntity> ratingConsultants;
 
-    @OneToMany(mappedBy = "userComment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "userComment", cascade = CascadeType.ALL)
     private List<CommentEntity> comments;
 
     public String getName() {
