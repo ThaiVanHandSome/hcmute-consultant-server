@@ -59,7 +59,7 @@ public class UserInformationEntity {
     @JsonIgnore
     private AddressEntity address;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<PostEntity> posts;
 
     @ManyToOne
@@ -67,36 +67,36 @@ public class UserInformationEntity {
     @JsonBackReference
     private AccountEntity account;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<RoleAuthEntity> roleAuths;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<ConversationEntity> userConversations;
 
-    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
     private Set<ConversationEntity> consultantConversations;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<ConsultationScheduleEntity> userConsultations;
 
-    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
     private Set<ConsultationScheduleEntity> consultantConsultations;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<QuestionEntity> questions;
 
-    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL)
     private Set<CommonQuestionEntity> commonQuestions;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<AnswerEntity> answers;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<RatingEntity> ratingUsers;
 
-    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "consultant", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<RatingEntity> ratingConsultants;
 
