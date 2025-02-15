@@ -11,7 +11,7 @@
 	<groupId>HcmuteConsultantServer</groupId>
 	<artifactId>HcmuteConsultantServer</artifactId>
 	<version>1.0</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>HcmuteConsultantServer</name>
 	<description>HcmuteConsultantServer</description>
 	<properties>
