@@ -15,8 +15,8 @@ import HcmuteConsultantServer.repository.admin.UserRepository;
 import HcmuteConsultantServer.security.jwt.JwtProvider;
 import HcmuteConsultantServer.service.interfaces.common.IStatusOnlineService;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,17 +48,13 @@ public class StatusOnlineController {
 
             commonStatusOnlineService.updateStatus(email, true);
             accountRepository.findByEmail(email).ifPresentOrElse(account -> {
-
                 sendOnlineUsersUpdate();
             }, () -> System.out.println("Người dùng không được tìm thấy với email: " + email));
-        } else {
         }
     }
 
-
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
         String token = headerAccessor.getFirstNativeHeader("Authorization");
 
@@ -70,21 +66,20 @@ public class StatusOnlineController {
             accountRepository.findByEmail(email).ifPresentOrElse(account -> {
                 sendOnlineUsersUpdate();
             }, () -> System.out.println("Người dùng không được tìm thấy với email: " + email));
-        } else {
         }
     }
 
-
-    @Scheduled(fixedRate = 300000)
+    @Scheduled(fixedRate = 300000) // 5 phút
     public void checkAndUpdateOnlineStatus() {
         LocalDateTime now = LocalDateTime.now();
 
         commonStatusOnlineService.getOnlineUsers().forEach((email, lastActiveTime) -> {
-            long secondsInactive = ChronoUnit.SECONDS.between(lastActiveTime, now);
+            long secondsInactive = Duration.between(lastActiveTime, now).toSeconds();
             if (secondsInactive >= 300) {
                 commonStatusOnlineService.updateStatus(email, false);
 
                 accountRepository.findByEmail(email).ifPresent(account -> {
+                    System.out.println("Cập nhật trạng thái offline cho: " + email);
                 });
             }
         });
@@ -121,7 +116,7 @@ public class StatusOnlineController {
 
         return commonStatusOnlineService.getOnlineUsers().entrySet().stream()
                 .filter(entry -> {
-                    long secondsInactive = ChronoUnit.SECONDS.between(entry.getValue(), now);
+                    long secondsInactive = Duration.between(entry.getValue(), now).toSeconds();
                     return secondsInactive < 300;
                 })
                 .map(entry -> {
@@ -144,5 +139,4 @@ public class StatusOnlineController {
                 .filter(userOnlineDTO -> userOnlineDTO != null)
                 .collect(Collectors.toList());
     }
-
 }

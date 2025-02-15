@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>11</java.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -208,6 +209,7 @@
 	<build>
 		<finalName>Nam4HocKy1TLCN</finalName>
 		<plugins>
+
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
