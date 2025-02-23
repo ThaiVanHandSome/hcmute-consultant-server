@@ -93,7 +93,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/oauth2/authorize/**", "/oauth2/callback/**").permitAll()
                 .antMatchers("/oauth2/authorize/google", "/oauth2/callback/google").permitAll()
                 .antMatchers(
-                    "https://hcmute-consultant-server-production.up.railway.app/oauth2/authorize/google"
+                        "https://hcmute-consultant-server-production.up.railway.app/oauth2/authorize/google",
+                        "http://localhost:8080/oauth2/callback/google"
                 ).permitAll()
                 .antMatchers(SecurityConstants.NOT_JWT).permitAll()
                 .antMatchers("/api/v1/upload").permitAll()
@@ -105,6 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(jwtEntryPoint)
                 .and()
                 .oauth2Login()
+                .loginPage("/login")
                 .authorizationEndpoint()
                 .baseUri("/oauth2/authorize")
                 .authorizationRequestRepository(cookieAuthorizationRequestRepository())
