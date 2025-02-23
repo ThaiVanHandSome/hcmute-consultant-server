@@ -31,11 +31,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-        securedEnabled = true,
-        jsr250Enabled = true,
-        prePostEnabled = true
-)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -59,8 +55,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
-    @Autowired
-    private JwtTokenFilter jwtTokenFilter;
+    @Bean
+    public JwtTokenFilter jwtTokenFilter() {
+        return new JwtTokenFilter();
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -87,29 +85,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/public/**", "/ws/**").permitAll()
-                .antMatchers("/login", "/login/**").permitAll()
-                .antMatchers("/oauth2/**", "/auth/**").permitAll()
-                .antMatchers("/oauth2/authorize/**", "/oauth2/callback/**").permitAll()
-                .antMatchers("/oauth2/authorize/google", "/oauth2/callback/google").permitAll()
-                .antMatchers(
-                        "https://hcmute-consultant-server-production.up.railway.app/oauth2/authorize/google",
-                        "https://hcmute-consultant-server-production.up.railway.app/oauth2/callback/google",
-                        "http://localhost:8080/oauth2/callback/google",
-                        "http://localhost:8080/oauth2/oauth2/authorize/google"
-
-                ).permitAll()
+                .antMatchers("/", "/public/**").permitAll()  // Cho phép truy cập không cần xác thực vào /
+                .antMatchers("/ws/**").permitAll()
+                .antMatchers("/oauth2/authorize/google", "/oauth2/callback/google").permitAll()  // Các endpoint OAuth2 công khai
+                .antMatchers("https://hcmute-consultant-server-production.up.railway.app/oauth2/authorize/google",
+                        "https://hcmute-consultant-server-production.up.railway.app/oauth2/callback/google").permitAll()  // Các endpoint OAuth2 công khai
                 .antMatchers(SecurityConstants.NOT_JWT).permitAll()
-                .antMatchers("/api/v1/upload").permitAll()
                 .antMatchers(SecurityConstants.JWT).authenticated()
+                .antMatchers("/api/v1/upload").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
-                .accessDeniedHandler(customAccessDeniedHandler)
-                .authenticationEntryPoint(jwtEntryPoint)
+                .accessDeniedHandler(customAccessDeniedHandler)  // Đảm bảo chỉ định 1 handler
+                .authenticationEntryPoint(jwtEntryPoint) // Thêm EntryPoint cho JWT
                 .and()
-                .oauth2Login()
+                .oauth2Login()  // Đảm bảo chỉ gọi 1 lần
                 .loginPage("/login")
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureHandler(oAuth2AuthenticationFailureHandler)
                 .authorizationEndpoint()
                 .baseUri("/oauth2/authorize")
                 .authorizationRequestRepository(cookieAuthorizationRequestRepository())
@@ -124,9 +117,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(oAuth2AuthenticationFailureHandler)
                 .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Quản lý session stateless
                 .and()
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // Đảm bảo JWT filter hoạt động trước filter xác thực username/password
     }
 
     @Bean
