@@ -1,4 +1,4 @@
-use kltn;
+use railway;
 
 -- Tạo bảng roles
 CREATE TABLE IF NOT EXISTS role (

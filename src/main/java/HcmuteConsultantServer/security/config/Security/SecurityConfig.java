@@ -88,7 +88,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/", "/public/**").permitAll()  // Cho phép truy cập không cần xác thực vào /
                 .antMatchers("/ws/**").permitAll()
                 .antMatchers("/oauth2/authorize/google", "/oauth2/callback/google").permitAll()  // Các endpoint OAuth2 công khai
-                .antMatchers("http://localhost:8080/oauth2/authorize/google", "http://localhost:8080/oauth2/callback/google").permitAll()  // Các endpoint OAuth2 công khai
+                .antMatchers("https://hcmute-consultant-server-production.up.railway.app/oauth2/authorize/google",
+                        "https://hcmute-consultant-server-production.up.railway.app/oauth2/callback/google").permitAll()  // Các endpoint OAuth2 công khai
+                .antMatchers("/oauth2/**").permitAll()
+                .antMatchers("/oauth2/authorize/**").permitAll()
+                .antMatchers("/oauth2/callback/**").permitAll()
                 .antMatchers(SecurityConstants.NOT_JWT).permitAll()
                 .antMatchers(SecurityConstants.JWT).authenticated()
                 .antMatchers("/api/v1/upload").permitAll()
@@ -120,7 +124,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // Đảm bảo JWT filter hoạt động trước filter xác thực username/password
     }
-
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

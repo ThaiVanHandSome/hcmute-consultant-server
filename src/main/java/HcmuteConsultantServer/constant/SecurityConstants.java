@@ -3,6 +3,10 @@ package HcmuteConsultantServer.constant;
 public interface SecurityConstants {
 
     String[] NOT_JWT = {
+            "/oauth2/authorize/google",
+            "/oauth2/callback/google",
+            "/oauth2/redirect",
+            "/oauth2/**",
             "/api/v1/auth/login",
             "/api/v1/auth/register",
             "/api/v1/auth/change-email",
