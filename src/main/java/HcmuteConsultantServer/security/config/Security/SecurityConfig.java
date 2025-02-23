@@ -85,24 +85,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/public/**").permitAll()  // Cho phép truy cập không cần xác thực vào /
-                .antMatchers("/ws/**").permitAll()
-                .antMatchers("/oauth2/authorize/google", "/oauth2/callback/google").permitAll()  // Các endpoint OAuth2 công khai
-                .antMatchers("https://hcmute-consultant-server-production.up.railway.app/oauth2/authorize/google",
-                        "https://hcmute-consultant-server-production.up.railway.app/oauth2/callback/google").permitAll()  // Các endpoint OAuth2 công khai
-                .antMatchers("/oauth2/**").permitAll()
-                .antMatchers("/oauth2/authorize/**").permitAll()
-                .antMatchers("/oauth2/callback/**").permitAll()
+                .antMatchers("/", "/public/**", "/ws/**").permitAll()
+                .antMatchers("/login", "/login/**").permitAll()
+                .antMatchers("/oauth2/**", "/auth/**").permitAll()
+                .antMatchers("/oauth2/authorize/**", "/oauth2/callback/**").permitAll()
+                .antMatchers("/oauth2/authorize/google", "/oauth2/callback/google").permitAll()
+                .antMatchers(
+                    "https://hcmute-consultant-server-production.up.railway.app/oauth2/authorize/google",
+                    "https://hcmute-consultant-server-production.up.railway.app/oauth2/callback/google"
+                ).permitAll()
                 .antMatchers(SecurityConstants.NOT_JWT).permitAll()
-                .antMatchers(SecurityConstants.JWT).authenticated()
                 .antMatchers("/api/v1/upload").permitAll()
+                .antMatchers(SecurityConstants.JWT).authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling()
-                .accessDeniedHandler(customAccessDeniedHandler)  // Đảm bảo chỉ định 1 handler
-                .authenticationEntryPoint(jwtEntryPoint) // Thêm EntryPoint cho JWT
+                .accessDeniedHandler(customAccessDeniedHandler)
+                .authenticationEntryPoint(jwtEntryPoint)
                 .and()
-                .oauth2Login()  // Đảm bảo chỉ gọi 1 lần
+                .oauth2Login()
                 .loginPage("/login")
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler)
@@ -120,9 +121,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .failureHandler(oAuth2AuthenticationFailureHandler)
                 .and()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Quản lý session stateless
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class); // Đảm bảo JWT filter hoạt động trước filter xác thực username/password
+                .addFilterBefore(jwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
     @Bean
