@@ -10,6 +10,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import HcmuteConsultantServer.model.exception.JWT401Exception;
 import HcmuteConsultantServer.security.authentication.UserDetailService;
 import HcmuteConsultantServer.service.implement.common.StatusOnlineServiceImpl;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -30,8 +32,23 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired
     private StatusOnlineServiceImpl commonStatusOnlineServiceImpl;
 
+    private boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        return path.startsWith("/oauth2/") || 
+               path.startsWith("/login") || 
+               path.startsWith("/auth/") ||
+               path.startsWith("/public/") ||
+               path.equals("/") ||
+               path.startsWith("/ws/");
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        if (shouldNotFilter(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String email = null;
         try {
             String token = getJwt(request);
