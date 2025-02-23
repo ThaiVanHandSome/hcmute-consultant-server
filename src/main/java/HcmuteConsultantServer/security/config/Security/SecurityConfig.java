@@ -115,6 +115,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService)
                 .and()
+                .defaultSuccessUrl("https://hcmute-consultant-client.vercel.app", true)
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler)
                 .and()
@@ -131,7 +132,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
                 "https://hcmute-consultant-client.vercel.app",
-                "https://hcmute-consultant.vercel.app"
+                "https://hcmute-consultant.vercel.app",
+                "https://hcmute-consultant-server-production.up.railway.app"
         ));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList(
