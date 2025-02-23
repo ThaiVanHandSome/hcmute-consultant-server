@@ -56,7 +56,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String targetUrl = "https://hcmute-consultant-client.vercel.app"; // Default redirect URL
+        String targetUrl = "http://localhost:3000"; // Default redirect URL
         
         if (!isAuthorizedRedirectUri(targetUrl)) {
             throw new Exceptions.ErrorException("Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication");
