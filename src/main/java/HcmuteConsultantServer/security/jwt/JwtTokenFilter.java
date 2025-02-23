@@ -32,7 +32,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Autowired
     private StatusOnlineServiceImpl commonStatusOnlineServiceImpl;
 
-    private boolean shouldNotFilter(HttpServletRequest request) {
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         return path.startsWith("/oauth2/") || 
                path.startsWith("/login") || 
