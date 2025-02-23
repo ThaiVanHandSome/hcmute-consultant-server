@@ -30,7 +30,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private final String[] AUTHORIZED_REDIRECT_URIS = {
         "http://localhost:3000",
-        "https://hcmute-consultant-client.vercel.app",
         "https://hcmute-consultant.vercel.app"
     };
 
