@@ -94,7 +94,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/oauth2/authorize/google", "/oauth2/callback/google").permitAll()
                 .antMatchers(
                         "https://hcmute-consultant-server-production.up.railway.app/oauth2/authorize/google",
-                        "http://localhost:8080/oauth2/callback/google"
+                        "https://hcmute-consultant-server-production.up.railway.app/oauth2/callback/google",
+                        "http://localhost:8080/oauth2/callback/google",
+                        "http://localhost:8080/oauth2/oauth2/authorize/google"
+
                 ).permitAll()
                 .antMatchers(SecurityConstants.NOT_JWT).permitAll()
                 .antMatchers("/api/v1/upload").permitAll()
