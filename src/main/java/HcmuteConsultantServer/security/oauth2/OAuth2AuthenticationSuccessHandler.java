@@ -28,11 +28,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
     private HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
 
-    private final String[] AUTHORIZED_REDIRECT_URIS = {
-        "http://localhost:3000",
-        "https://hcmute-consultant.vercel.app"
-    };
-
     @Autowired
     OAuth2AuthenticationSuccessHandler(JwtProvider tokenProvider, AppProperties appProperties,
                                        HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository) {
@@ -54,18 +49,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 
-    @Override
     protected String determineTargetUrl(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        String targetUrl = "http://localhost:3000"; // Default redirect URL
-        
-        if (!isAuthorizedRedirectUri(targetUrl)) {
+        Optional<String> redirectUri = CookieUtils.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
+                .map(Cookie::getValue);
+
+        if (!isAuthorizedRedirectUri(redirectUri.get())) {
             throw new Exceptions.ErrorException("Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication");
         }
-        
-        // Tạo JWT token
+
+        String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
+
         String token = tokenProvider.createToken(authentication);
-        
-        // Thêm token vào URL redirect
+
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", token)
                 .build().toUriString();
@@ -77,11 +72,18 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     }
 
     private boolean isAuthorizedRedirectUri(String uri) {
-        for (String authorizedUri : AUTHORIZED_REDIRECT_URIS) {
-            if (uri.startsWith(authorizedUri)) {
-                return true;
-            }
-        }
-        return false;
+        URI clientRedirectUri = URI.create(uri);
+
+        return appProperties.getOauth2().getAuthorizedRedirectUris()
+                .stream()
+                .anyMatch(authorizedRedirectUri -> {
+                    // Only validate host and port. Let the clients use different paths if they want to
+                    URI authorizedURI = URI.create(authorizedRedirectUri);
+                    if(authorizedURI.getHost().equalsIgnoreCase(clientRedirectUri.getHost())
+                            && authorizedURI.getPort() == clientRedirectUri.getPort()) {
+                        return true;
+                    }
+                    return false;
+                });
     }
 }
