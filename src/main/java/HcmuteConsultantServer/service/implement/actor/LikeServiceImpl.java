@@ -1,18 +1,22 @@
 package HcmuteConsultantServer.service.implement.actor;
 
+import java.util.List;
+
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
 import HcmuteConsultantServer.constant.enums.LikeType;
 import HcmuteConsultantServer.model.entity.LikeKeyEntity;
 import HcmuteConsultantServer.model.entity.LikeRecordEntity;
 import HcmuteConsultantServer.model.entity.UserInformationEntity;
+import HcmuteConsultantServer.model.payload.dto.actor.UserLikeDTO;
+import HcmuteConsultantServer.model.payload.mapper.actor.UserLikeMapper;
 import HcmuteConsultantServer.repository.actor.LikeRecordRepository;
 import HcmuteConsultantServer.service.interfaces.actor.ILikeService;
 import HcmuteConsultantServer.service.interfaces.common.IUserService;
-
-import javax.transaction.Transactional;
-import java.util.List;
 
 @Service
 @Transactional
@@ -20,11 +24,15 @@ public class LikeServiceImpl implements ILikeService {
 
     private final LikeRecordRepository likeRecordRepository;
     private final IUserService userService;
+    private final UserLikeMapper userLikeMapper;
 
     @Autowired
-    public LikeServiceImpl(LikeRecordRepository likeRecordRepository, @Lazy IUserService userService) {
+    public LikeServiceImpl(LikeRecordRepository likeRecordRepository, 
+                           @Lazy IUserService userService,
+                           UserLikeMapper userLikeMapper) {
         this.likeRecordRepository = likeRecordRepository;
         this.userService = userService;
+        this.userLikeMapper = userLikeMapper;
     }
 
     @Override
@@ -35,6 +43,11 @@ public class LikeServiceImpl implements ILikeService {
     @Override
     public List<LikeRecordEntity> getLikeRecordByCommentId(Integer commentId) {
         return likeRecordRepository.getLikeRecordsByCommentId(commentId);
+    }
+
+    @Override
+    public List<LikeRecordEntity> getLikeRecordByQuestionId(Integer questionId) {
+        return likeRecordRepository.getLikeRecordsByQuestionId(questionId);
     }
 
     @Override
@@ -108,5 +121,21 @@ public class LikeServiceImpl implements ILikeService {
         return likeRecordRepository.existsByLikeKeyUserIdAndLikeKeyTargetIdAndLikeKeyType(user.getId(), questionId, "question");
     }
 
+    @Override
+    public List<UserLikeDTO> getLikeUsersOfPost(Integer postId) {
+        List<UserInformationEntity> users = likeRecordRepository.getLikeUsersOfPost(postId, "post");
+        return userLikeMapper.mapToDTOList(users);
+    }
 
+    @Override
+    public List<UserLikeDTO> getLikeUsersOfComment(Integer commentId) {
+        List<UserInformationEntity> users = likeRecordRepository.getLikeUsersOfComment(commentId, "comment");
+        return userLikeMapper.mapToDTOList(users);
+    }
+
+    @Override
+    public List<UserLikeDTO> getLikeUsersOfQuestion(Integer questionId) {
+        List<UserInformationEntity> users = likeRecordRepository.getLikeUsersOfQuestion(questionId, "question");
+        return userLikeMapper.mapToDTOList(users);
+    }
 }

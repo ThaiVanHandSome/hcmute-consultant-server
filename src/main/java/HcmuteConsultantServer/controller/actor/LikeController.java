@@ -1,15 +1,29 @@
 package HcmuteConsultantServer.controller.actor;
 
+import java.security.Principal;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import HcmuteConsultantServer.constant.SecurityConstants;
 import HcmuteConsultantServer.constant.enums.NotificationContent;
 import HcmuteConsultantServer.constant.enums.NotificationType;
-import HcmuteConsultantServer.model.entity.*;
+import HcmuteConsultantServer.model.entity.CommentEntity;
+import HcmuteConsultantServer.model.entity.PostEntity;
+import HcmuteConsultantServer.model.entity.QuestionEntity;
+import HcmuteConsultantServer.model.entity.UserInformationEntity;
 import HcmuteConsultantServer.model.exception.Exceptions.ErrorException;
+import HcmuteConsultantServer.model.payload.dto.actor.UserLikeDTO;
 import HcmuteConsultantServer.model.payload.response.DataResponse;
 import HcmuteConsultantServer.repository.actor.CommentRepository;
 import HcmuteConsultantServer.repository.actor.PostRepository;
@@ -17,10 +31,6 @@ import HcmuteConsultantServer.repository.actor.QuestionRepository;
 import HcmuteConsultantServer.repository.admin.UserRepository;
 import HcmuteConsultantServer.service.interfaces.actor.ILikeService;
 import HcmuteConsultantServer.service.interfaces.common.INotificationService;
-
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("${base.url}")
@@ -276,6 +286,36 @@ public class LikeController {
                 .build());
     }
 
+    @PreAuthorize(SecurityConstants.PreAuthorize.USER + " or " + SecurityConstants.PreAuthorize.TUVANVIEN + " or " + SecurityConstants.PreAuthorize.TRUONGBANTUVAN + " or " + SecurityConstants.PreAuthorize.ADMIN)
+    @GetMapping("/like-users/post")
+    public ResponseEntity<DataResponse<List<UserLikeDTO>>> getLikeUsersOfPost(@RequestParam Integer postId) {
+        List<UserLikeDTO> likeUsers = likeRecordService.getLikeUsersOfPost(postId);
+        return ResponseEntity.ok(DataResponse.<List<UserLikeDTO>>builder()
+                .status("success")
+                .message("Lấy danh sách người dùng thích bài viết thành công.")
+                .data(likeUsers)
+                .build());
+    }
 
+    @PreAuthorize(SecurityConstants.PreAuthorize.USER + " or " + SecurityConstants.PreAuthorize.TUVANVIEN + " or " + SecurityConstants.PreAuthorize.TRUONGBANTUVAN + " or " + SecurityConstants.PreAuthorize.ADMIN)
+    @GetMapping("/like-users/comment")
+    public ResponseEntity<DataResponse<List<UserLikeDTO>>> getLikeUsersOfComment(@RequestParam Integer commentId) {
+        List<UserLikeDTO> likeUsers = likeRecordService.getLikeUsersOfComment(commentId);
+        return ResponseEntity.ok(DataResponse.<List<UserLikeDTO>>builder()
+                .status("success")
+                .message("Lấy danh sách người dùng thích bình luận thành công.")
+                .data(likeUsers)
+                .build());
+    }   
 
+    @PreAuthorize(SecurityConstants.PreAuthorize.USER + " or " + SecurityConstants.PreAuthorize.TUVANVIEN + " or " + SecurityConstants.PreAuthorize.TRUONGBANTUVAN + " or " + SecurityConstants.PreAuthorize.ADMIN)
+    @GetMapping("/like-users/question")
+    public ResponseEntity<DataResponse<List<UserLikeDTO>>> getLikeUsersOfQuestion(@RequestParam Integer questionId) {
+        List<UserLikeDTO> likeUsers = likeRecordService.getLikeUsersOfQuestion(questionId);
+        return ResponseEntity.ok(DataResponse.<List<UserLikeDTO>>builder()
+                .status("success")
+                .message("Lấy danh sách người dùng thích câu hỏi thành công.")
+                .data(likeUsers)
+                .build());
+    }
 }

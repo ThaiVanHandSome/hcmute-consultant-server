@@ -1,15 +1,18 @@
 package HcmuteConsultantServer.service.interfaces.actor;
 
+import java.util.List;
+
 import HcmuteConsultantServer.model.entity.LikeRecordEntity;
 import HcmuteConsultantServer.model.entity.UserInformationEntity;
-
-import java.util.List;
+import HcmuteConsultantServer.model.payload.dto.actor.UserLikeDTO;
 
 public interface ILikeService {
 
     List<LikeRecordEntity> getLikeRecordByPostId(Integer postId);
 
     List<LikeRecordEntity> getLikeRecordByCommentId(Integer commentId);
+
+    List<LikeRecordEntity> getLikeRecordByQuestionId(Integer questionId);
 
     void likePost(Integer postId, Integer userId);
 
@@ -25,6 +28,8 @@ public interface ILikeService {
 
     Integer countLikesByCommentId(Integer commentId);
 
+
+
     void likeQuestion(Integer questionId, Integer userId);
 
     void unlikeQuestion(Integer questionId, Integer userId);
@@ -35,6 +40,11 @@ public interface ILikeService {
     boolean existsByUserAndComment(UserInformationEntity user, Integer commentId);
     boolean existsByUserAndQuestion(UserInformationEntity user, Integer questionId);
 
+    List<UserLikeDTO> getLikeUsersOfPost(Integer postId);
+
+    List<UserLikeDTO> getLikeUsersOfComment(Integer commentId);
+
+    List<UserLikeDTO> getLikeUsersOfQuestion(Integer questionId);
 
 
     }

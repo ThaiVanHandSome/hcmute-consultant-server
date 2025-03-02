@@ -1,5 +1,10 @@
 package HcmuteConsultantServer.controller.common;
 
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,11 +18,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import HcmuteConsultantServer.constant.SecurityConstants;
 import HcmuteConsultantServer.constant.enums.QuestionFilterStatus;
 import HcmuteConsultantServer.model.entity.LikeRecordEntity;
-import HcmuteConsultantServer.model.exception.Exceptions;
-import HcmuteConsultantServer.model.payload.dto.actor.*;
+import HcmuteConsultantServer.model.payload.dto.actor.CommentDTO;
+import HcmuteConsultantServer.model.payload.dto.actor.CommonQuestionDTO;
+import HcmuteConsultantServer.model.payload.dto.actor.ConsultantDTO;
+import HcmuteConsultantServer.model.payload.dto.actor.DepartmentDTO;
+import HcmuteConsultantServer.model.payload.dto.actor.FieldDTO;
+import HcmuteConsultantServer.model.payload.dto.actor.MyQuestionDTO;
+import HcmuteConsultantServer.model.payload.dto.actor.QuestionStatusDTO;
+import HcmuteConsultantServer.model.payload.dto.actor.RoleAskDTO;
+import HcmuteConsultantServer.model.payload.dto.actor.UserDTO;
 import HcmuteConsultantServer.model.payload.response.DataResponse;
 import HcmuteConsultantServer.repository.actor.CommentRepository;
 import HcmuteConsultantServer.repository.actor.PostRepository;
@@ -26,11 +39,6 @@ import HcmuteConsultantServer.repository.admin.UserRepository;
 import HcmuteConsultantServer.service.interfaces.actor.ICommentService;
 import HcmuteConsultantServer.service.interfaces.actor.ILikeService;
 import HcmuteConsultantServer.service.interfaces.common.IGuestService;
-
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("${base.url}")
@@ -220,6 +228,14 @@ public class GuestController {
     @GetMapping("/like-records/comment")
     public ResponseEntity<DataResponse<List<LikeRecordEntity>>> getLikeRecordByCommentId(@RequestParam Integer commentId) {
         List<LikeRecordEntity> likeRecords = likeRecordService.getLikeRecordByCommentId(commentId);
+
+        return ResponseEntity.ok(DataResponse.<List<LikeRecordEntity>>builder().status("success")
+                .data(likeRecords).build());
+    }
+
+    @GetMapping("/like-records/question")
+    public ResponseEntity<DataResponse<List<LikeRecordEntity>>> getLikeRecordByQuestionId(@RequestParam Integer questionId) {
+        List<LikeRecordEntity> likeRecords = likeRecordService.getLikeRecordByQuestionId(questionId);
 
         return ResponseEntity.ok(DataResponse.<List<LikeRecordEntity>>builder().status("success")
                 .data(likeRecords).build());

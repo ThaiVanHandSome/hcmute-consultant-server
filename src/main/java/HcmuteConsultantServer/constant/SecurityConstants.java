@@ -192,7 +192,10 @@ public interface SecurityConstants {
             "/api/v1/user/statistics/ratings/yearly",
             "/api/v1/user/statistics/consultationSchedule/yearly",
             "/api/v1/user/statistics/conversations/yearly",
-            "/api/v1/user/statistics/conversationsMember/yearly"
+            "/api/v1/user/statistics/conversationsMember/yearly",
+            "/api/v1/like-users/post",
+            "/api/v1/like-users/comment",
+            "/api/v1/like-users/question"
     };
 
     interface Role {
