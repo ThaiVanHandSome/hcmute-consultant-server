@@ -161,6 +161,7 @@ public interface SecurityConstants {
             "/api/v1/upload",
             "/api/v1/cloudinary/upload",
             "/api/v1/notification",
+            "/api/v1/notification/read",
             "/api/v1/user/notifications/list",
             "/api/v1/profile/change-password",
             "/api/v1/profile",

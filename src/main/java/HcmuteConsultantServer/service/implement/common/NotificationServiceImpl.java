@@ -1,16 +1,29 @@
 package HcmuteConsultantServer.service.implement.common;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
 import HcmuteConsultantServer.constant.enums.NotificationStatus;
 import HcmuteConsultantServer.constant.enums.NotificationType;
 import HcmuteConsultantServer.model.entity.ConsultationScheduleEntity;
 import HcmuteConsultantServer.model.entity.ConsultationScheduleRegistrationEntity;
 import HcmuteConsultantServer.model.entity.NotificationEntity;
+import HcmuteConsultantServer.model.exception.Exceptions;
 import HcmuteConsultantServer.model.payload.dto.common.NotificationResponseDTO;
 import HcmuteConsultantServer.model.payload.dto.common.NotificationResponseDTO.NotificationDTO;
 import HcmuteConsultantServer.repository.actor.ConsultationScheduleRegistrationRepository;
@@ -18,15 +31,6 @@ import HcmuteConsultantServer.repository.actor.ConsultationScheduleRepository;
 import HcmuteConsultantServer.repository.common.NotificationRepository;
 import HcmuteConsultantServer.security.config.Email.EmailService;
 import HcmuteConsultantServer.service.interfaces.common.INotificationService;
-
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Service
 public class NotificationServiceImpl implements INotificationService {
@@ -80,11 +84,6 @@ public class NotificationServiceImpl implements INotificationService {
                 .build();
 
         simpMessagingTemplate.convertAndSendToUser(String.valueOf(receiverId), "/notification", responseDTO);
-    }
-
-    @Override
-    public List<NotificationEntity> getNotificationsByReceiverId(Integer receiverId) {
-        return notificationRepository.findByReceiverId(receiverId);
     }
 
     @Scheduled(cron = "0,01 * * * * ?")
@@ -182,41 +181,36 @@ public class NotificationServiceImpl implements INotificationService {
         }
     }
 
-//    @Override
-//    public Page<HcmuteConsultantServer.model.payload.dto.common.NotificationDTO> findNotificationsByUserWithFilters(Integer userId, String content, LocalDate startDate, LocalDate endDate, Pageable pageable) {
-//
-//        Specification<NotificationEntity> spec = Specification.where(NotificationSpecification.isReceiver(userId));
-//
-//        if (content != null && !content.trim().isEmpty()) {
-//            spec = spec.and(NotificationSpecification.hasContent(content));
-//        }
-//
-//        if (startDate != null && endDate != null) {
-//            spec = spec.and(NotificationSpecification.hasExactDateRange(startDate, endDate));
-//        } else if (startDate != null) {
-//            spec = spec.and(NotificationSpecification.hasExactStartDate(startDate));
-//        } else if (endDate != null) {
-//            spec = spec.and(NotificationSpecification.hasDateBefore(endDate));
-//        }
-//
-//        Page<NotificationEntity> notifications = notificationRepository.findAll(spec, pageable);
-//
-//        return notifications.map(this::convertToDTO);
-//    }
-//
-//    private HcmuteConsultantServer.model.payload.dto.common.NotificationDTO convertToDTO(NotificationEntity entity) {
-//        UserInformationEntity sender = userRepository.findById(entity.getSenderId()).orElseThrow();
-//        String email = sender.getAccount().getEmail();
-//        String fullName = sender.getLastName() + sender.getFirstName();
-//        return HcmuteConsultantServer.model.payload.dto.common.NotificationDTO.builder()
-//                .id(entity.getId())
-//                .sender(HcmuteConsultantServer.model.payload.dto.common.NotificationDTO.SenderDTO.builder()
-//                        .id(entity.getSenderId())
-//                        .email(email)
-//                        .fullName(fullName)
-//                        .build())
-//                .content(entity.getContent())
-//                .time(entity.getTime())
-//                .build();
-//    }
+    @Override
+    public void readNotification(Integer notificationId) {
+        NotificationEntity notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new Exceptions.ErrorException("Thông báo không tồn tại"));
+        notification.setStatus(NotificationStatus.READ);
+        notificationRepository.save(notification);
+    }
+
+    @Override
+    public void readAllNotifications(Integer userId) {
+        List<NotificationEntity> notifications = notificationRepository.findByReceiverId(userId);
+        for (NotificationEntity notification : notifications) {
+            notification.setStatus(NotificationStatus.READ);
+        }
+        notificationRepository.saveAll(notifications);
+    }
+
+    @Override
+    public NotificationEntity findNotificationById(Integer notificationId) {
+        return notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new Exceptions.ErrorException("Thông báo không tồn tại"));
+    }
+
+    @Override
+    public Page<NotificationEntity> getNotificationsByReceiverId(Integer receiverId, Pageable pageable) {
+        return notificationRepository.findByReceiverId(receiverId, pageable);
+    }
+
+    @Override
+    public void deleteAllNotifications(Integer userId) {
+        notificationRepository.deleteAllByReceiverId(userId);
+    }
 }
