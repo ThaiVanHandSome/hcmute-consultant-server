@@ -12,7 +12,7 @@ import HcmuteConsultantServer.model.entity.UserInformationEntity;
 
 import java.util.List;
 import java.util.Optional;
-
+import java.time.LocalDate;
 @Repository
 public interface RatingRepository extends PagingAndSortingRepository<RatingEntity, Integer>, JpaSpecificationExecutor<RatingEntity> {
 
@@ -44,4 +44,6 @@ public interface RatingRepository extends PagingAndSortingRepository<RatingEntit
 
     void deleteByConsultantId(Integer consultantId);
 
+    @Query("SELECT r FROM RatingEntity r WHERE r.submittedAt BETWEEN :fromDate AND :toDate")
+    List<RatingEntity> findBySubmittedAtBetween(@Param("fromDate") LocalDate fromDate, @Param("toDate") LocalDate toDate);
 }
