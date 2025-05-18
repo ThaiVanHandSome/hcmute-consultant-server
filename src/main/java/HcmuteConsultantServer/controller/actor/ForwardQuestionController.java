@@ -71,15 +71,6 @@ public class ForwardQuestionController {
             Optional<UserInformationEntity> receiverAdvisorOpt = userRepository.findByRoleAndDepartment(
                     SecurityConstants.Role.TRUONGBANTUVAN, receiverConsultant.getAccount().getDepartment().getId());
 
-            senderAdvisorOpt.ifPresent(senderHeadOfDepartment -> {
-                notificationService.sendUserNotification(
-                        senderConsultant.getId(),
-                        senderHeadOfDepartment.getId(),
-                        NotificationContent.FORWARD_QUESTION_SENT.formatMessage(senderConsultant.getLastName() + " " + senderConsultant.getFirstName()),
-                        NotificationType.TRUONGBANTUVAN
-                );
-            });
-
             receiverAdvisorOpt.ifPresent(receiverHeadOfDepartment -> {
                 notificationService.sendUserNotification(
                         senderConsultant.getId(),

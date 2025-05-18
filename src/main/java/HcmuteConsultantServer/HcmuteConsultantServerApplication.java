@@ -6,10 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SpringBootApplication
 @EnableScheduling
 public class HcmuteConsultantServerApplication {
+    private static final Logger logger = LoggerFactory.getLogger(HcmuteConsultantServerApplication.class);
 
 	public static void main(String[] args) {
 		Dotenv dotenv = null;
@@ -21,9 +24,14 @@ public class HcmuteConsultantServerApplication {
 					.filename(".env")
 					.ignoreIfMissing()
 					.load();
-			System.out.println("Running in local environment. Loaded .env file.");
+			logger.info("Running in local environment. Loaded .env file.");
 		} else {
-			System.out.println("Running in Railway environment. Using environment variables.");
+			logger.info("Running in Railway environment. Using environment variables.");
+			// Log các biến môi trường (chỉ tên, không log giá trị vì lý do bảo mật)
+			logger.info("Environment variables available: DB_URL={}, DB_USERNAME={}, JWT_SECRET={}, etc.",
+					System.getenv("DB_URL") != null ? "set" : "not set",
+					System.getenv("DB_USERNAME") != null ? "set" : "not set",
+					System.getenv("JWT_SECRET") != null ? "set" : "not set");
 		}
 
 		SpringApplication app = new SpringApplication(HcmuteConsultantServerApplication.class);
@@ -75,3 +83,4 @@ public class HcmuteConsultantServerApplication {
 		app.run(args);
 	}
 }
+

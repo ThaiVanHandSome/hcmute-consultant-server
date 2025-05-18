@@ -22,8 +22,7 @@ public interface IGuestService {
 
     List<FieldDTO> getFieldByDepartment(Integer departmentId);
 
-    Page<MyQuestionDTO> getQuestion(Integer departmentId, LocalDate startDate, LocalDate endDate, Pageable pageable);
-
+    Page<MyQuestionDTO> getQuestion(Integer departmentId, LocalDate startDate, LocalDate endDate, Boolean isNewest, Boolean isMostLiked, Pageable pageable);
     List<RoleAskDTO> getAllRoleAsk();
-
+    Page<MyQuestionDTO> searchQuestionsByTitle(String content, Boolean isNewest, Boolean isMostLiked, Pageable pageable);
 }

@@ -202,7 +202,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>Nam4HocKy1TLCN</finalName>
+		<finalName>HcmuteConsultantServer</finalName>
 		<plugins>
 
 			<plugin>

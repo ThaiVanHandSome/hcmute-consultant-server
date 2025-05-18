@@ -59,6 +59,8 @@ public class PostServiceImpl implements IPostService {
                 ? fileStorageService.saveFile(postRequest.getFile())
                 : null;
 
+        boolean isAdmin = user.getAccount().getRole().getName().equals(SecurityConstants.Role.ADMIN);
+
         PostEntity post = PostEntity.builder()
                 .title(postRequest.getTitle())
                 .content(postRequest.getContent())
@@ -66,7 +68,7 @@ public class PostServiceImpl implements IPostService {
                 .fileName(fileName)
                 .user(user)
                 .createdAt(LocalDate.now())
-                .isApproved(false)
+                .isApproved(isAdmin)
                 .views(0)
                 .build();
 
@@ -239,3 +241,4 @@ public class PostServiceImpl implements IPostService {
 
 
 }
+

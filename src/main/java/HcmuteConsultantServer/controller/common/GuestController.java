@@ -178,17 +178,31 @@ public class GuestController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @RequestParam(required = false) Boolean isNewest,
+            @RequestParam(required = false) Boolean isMostLiked,
+            @RequestParam(required = false) String content) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy));
 
-        Page<MyQuestionDTO> questions = guestService.getQuestion(departmentId, startDate, endDate, pageable);
-
-        return DataResponse.<Page<MyQuestionDTO>>builder()
-                .status("success")
-                .message(departmentId != null ? "Lọc câu hỏi theo phòng ban thành công." : "Lấy tất cả câu hỏi thành công.")
-                .data(questions)
-                .build();
+        Page<MyQuestionDTO> questions;
+        if (content != null && !content.trim().isEmpty()) {
+            // Nếu content được cung cấp, gọi hàm tìm kiếm và làm mới danh sách
+            questions = guestService.searchQuestionsByTitle(content, isNewest, isMostLiked, pageable);
+            return DataResponse.<Page<MyQuestionDTO>>builder()
+                    .status("success")
+                    .message("Tìm kiếm và làm mới danh sách câu hỏi theo tiêu đề thành công.")
+                    .data(questions)
+                    .build();
+        } else {
+            // Nếu không có content, giữ nguyên logic hiện tại
+            questions = guestService.getQuestion(departmentId, startDate, endDate, isNewest, isMostLiked, pageable);
+            return DataResponse.<Page<MyQuestionDTO>>builder()
+                    .status("success")
+                    .message(departmentId != null ? "Lọc câu hỏi theo phòng ban thành công." : "Lấy tất cả câu hỏi thành công.")
+                    .data(questions)
+                    .build();
+        }
     }
 
 
@@ -273,4 +287,6 @@ public class GuestController {
         return ResponseEntity.ok(DataResponse.<Integer>builder().status("success")
                 .data(count).build());
     }
+
+    
 }
